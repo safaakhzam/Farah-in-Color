@@ -1,0 +1,100 @@
+@import "tailwindcss";
+
+/*
+ * Brand palette
+ * Warm gallery whites and charcoal keep the paintings in focus;
+ * coral, saffron and teal are the "in Color" accents.
+ */
+@theme {
+  --color-canvas: #fbf8f3;      /* page background, warm white */
+  --color-paper: #ffffff;
+  --color-sand: #f4efe7;        /* soft section background */
+  --color-line: #e7e0d5;        /* hairlines and borders */
+  --color-ink: #1f1d1b;         /* charcoal text */
+  --color-muted: #6b655e;       /* secondary text (AA on canvas) */
+  --color-coral: #e8664f;
+  --color-coral-deep: #b9432d;  /* coral for small text (AA contrast) */
+  --color-saffron: #e9a93b;
+  --color-teal: #1f8a87;
+  --color-teal-deep: #156663;
+  --color-whatsapp: #1fa855;
+
+  --font-serif: var(--font-display), "Georgia", serif;
+  --font-sans: var(--font-body), ui-sans-serif, system-ui, sans-serif;
+
+  --animate-fade-up: fade-up 0.7s ease-out both;
+  @keyframes fade-up {
+    from { opacity: 0; transform: translateY(12px); }
+    to { opacity: 1; transform: none; }
+  }
+}
+
+@layer base {
+  html {
+    -webkit-tap-highlight-color: transparent;
+    scroll-behavior: smooth;
+  }
+  body {
+    @apply bg-canvas text-ink font-sans antialiased;
+  }
+  h1, h2, h3 {
+    @apply font-serif font-normal tracking-tight;
+  }
+  ::selection {
+    background: color-mix(in srgb, var(--color-saffron) 40%, transparent);
+  }
+  :focus-visible {
+    outline: 2px solid var(--color-teal);
+    outline-offset: 2px;
+  }
+}
+
+@layer components {
+  .container-page {
+    @apply mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-10;
+  }
+  .eyebrow {
+    @apply text-xs font-medium uppercase tracking-[0.2em] text-muted;
+  }
+  /* The vibrant gradient used for "Color" in the wordmark and accents */
+  .text-color-gradient {
+    background: linear-gradient(95deg, var(--color-coral) 0%, var(--color-saffron) 50%, var(--color-teal) 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+  .bg-color-gradient {
+    background: linear-gradient(90deg, var(--color-coral), var(--color-saffron), var(--color-teal));
+  }
+
+  .btn, .btn-primary, .btn-accent, .btn-outline, .btn-whatsapp {
+    @apply inline-flex items-center justify-center gap-2 rounded-full px-6 py-3 text-sm font-medium transition
+      disabled:cursor-not-allowed disabled:opacity-50;
+  }
+  .btn-primary {
+    @apply bg-ink text-white hover:bg-black;
+  }
+  .btn-accent {
+    @apply bg-coral-deep text-white hover:bg-coral;
+  }
+  .btn-outline {
+    @apply border border-ink/20 bg-transparent text-ink hover:border-ink;
+  }
+  .btn-whatsapp {
+    @apply bg-whatsapp text-white hover:brightness-95;
+  }
+
+  .field-label {
+    @apply mb-1.5 block text-sm font-medium;
+  }
+  .field {
+    @apply w-full rounded-xl border border-line bg-paper px-4 py-3 text-base text-ink placeholder:text-muted/70
+      focus:border-teal focus:outline-none focus:ring-2 focus:ring-teal/20;
+  }
+  .field-error {
+    @apply mt-1 text-sm text-coral-deep;
+  }
+  .card {
+    @apply rounded-2xl border border-line bg-paper;
+  }
+}
