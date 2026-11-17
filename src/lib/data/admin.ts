@@ -34,8 +34,8 @@ const demoCommissions: Commission[] = [
 
 const demoMessages: ContactMessage[] = [
   {
-    id: "demo-m-1", name: "Lea", email: "lea@example.com", phone: null, message: "Hi Farah, do you ship to Tripoli? I love Saffron Tide!",
-    painting_slug: "Saffron Tide", handled: false, created_at: new Date(Date.now() - 7200_000).toISOString(),
+    id: "demo-m-1", name: "Lea", email: "lea@example.com", phone: null, message: "Hi Farah, do you ship to Tripoli? I love Two Shores!",
+    painting_slug: "Two Shores", handled: false, created_at: new Date(Date.now() - 7200_000).toISOString(),
   },
 ];
 
