@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Banknote, ChevronRight, Truck } from "lucide-react";
+import { AddToCartButton } from "@/components/cart/AddToCartButton";
 import { ContactForm } from "@/components/forms/ContactForm";
 import { WhatsAppIcon } from "@/components/icons";
 import { PaintingCard } from "@/components/PaintingCard";
@@ -121,9 +122,21 @@ export default async function PaintingPage({ params }: Props) {
 
             <div className="mt-8 space-y-3">
               {available ? (
-                <Link href={`/order/${painting.slug}`} className="btn-primary w-full py-4 text-base">
-                  <Banknote className="h-5 w-5" /> Order (Cash on Delivery)
-                </Link>
+                <>
+                  <Link href={`/order/${painting.slug}`} className="btn-primary w-full py-4 text-base">
+                    <Banknote className="h-5 w-5" /> Order (Cash on Delivery)
+                  </Link>
+                  <AddToCartButton
+                    item={{
+                      id: painting.id,
+                      slug: painting.slug,
+                      title: painting.title,
+                      price: painting.price_usd,
+                      image: painting.images[0]?.url ?? "",
+                      medium: painting.medium,
+                    }}
+                  />
+                </>
               ) : (
                 <p className="rounded-xl bg-sand px-4 py-3 text-sm">
                   {painting.status === "reserved"

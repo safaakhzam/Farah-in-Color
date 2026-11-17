@@ -49,6 +49,15 @@ export interface Order {
   payment_status: "unpaid" | "paid";
   status: OrderStatus;
   created_at: string;
+  /** The paintings in this order (one or more). */
+  items?: OrderItem[];
+}
+
+export interface OrderItem {
+  painting_id: string | null;
+  painting_title: string;
+  painting_slug: string | null;
+  price_usd: number;
 }
 
 export interface Commission {

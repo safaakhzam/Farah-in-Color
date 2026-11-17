@@ -7,13 +7,14 @@ import { LEBANON_AREAS } from "@/lib/lebanon";
 import type { FormState } from "@/lib/validation";
 import { Field, FormError, Honeypot } from "./Field";
 
-export function OrderForm({ paintingId, totalLabel }: { paintingId: string; totalLabel: string }) {
+export function OrderForm({ paintingIds, totalLabel }: { paintingIds: string[]; totalLabel: string }) {
+  const many = paintingIds.length > 1;
   const [state, action, pending] = useActionState<FormState, FormData>(placeOrder, {});
 
   return (
     <form action={action} className="relative space-y-5" noValidate>
       <Honeypot />
-      <input type="hidden" name="paintingId" value={paintingId} />
+      <input type="hidden" name="paintingIds" value={paintingIds.join(",")} />
       <Field name="name" label="Full name" state={state} autoComplete="name" required />
       <div className="grid gap-5 sm:grid-cols-2">
         <Field name="phone" label="Phone number" type="tel" inputMode="tel" placeholder="03 123 456" hint="Farah will call or WhatsApp you on this number." state={state} autoComplete="tel" required />
@@ -33,14 +34,14 @@ export function OrderForm({ paintingId, totalLabel }: { paintingId: string; tota
 
       <div className="rounded-xl bg-sand px-4 py-3 text-sm">
         <p className="font-medium">Payment: cash on delivery</p>
-        <p className="mt-0.5 text-muted">Nothing to pay now. You pay {totalLabel} in cash (USD) when Farah delivers your painting.</p>
+        <p className="mt-0.5 text-muted">Nothing to pay now. You pay {totalLabel} in cash (USD) when Farah delivers your {many ? "paintings" : "painting"}.</p>
       </div>
 
       <FormError state={state} />
       <button type="submit" className="btn-primary w-full py-4 text-base" disabled={pending}>
         {pending && <Loader2 className="h-5 w-5 animate-spin" />} Place order
       </button>
-      <p className="text-center text-xs text-muted">By ordering, the painting is reserved for you while Farah confirms delivery.</p>
+      <p className="text-center text-xs text-muted">By ordering, {many ? "the paintings are" : "the painting is"} reserved for you while Farah confirms delivery.</p>
     </form>
   );
 }

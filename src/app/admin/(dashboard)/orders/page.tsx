@@ -30,7 +30,7 @@ export default async function OrdersPage({ searchParams }: { searchParams: Promi
 
   return (
     <>
-      <PageHeader title="Orders" description="Confirmed → you agreed on delivery. Delivered → painting becomes Sold. Cancelled → painting goes back to Available." />
+      <PageHeader title="Orders" description="Confirmed → you agreed on delivery. Delivered → the paintings become Sold. Cancelled → they go back to Available." />
       <div className="mb-6 flex flex-wrap gap-2">
         {[{ value: "", label: "All" }, ...STATUS].map((s) => (
           <Link
@@ -55,6 +55,15 @@ export default async function OrdersPage({ searchParams }: { searchParams: Promi
                     <span className="text-sm text-muted">{o.order_number} · {formatDate(o.created_at)}</span>
                   </div>
                   <p className="mt-2 font-serif text-2xl">{o.painting_title}</p>
+                  {(o.items?.length ?? 0) > 1 && (
+                    <ul className="mt-1 text-sm text-muted">
+                      {o.items!.map((i) => (
+                        <li key={(i.painting_id ?? i.painting_title) + i.price_usd}>
+                          {i.painting_slug ? <Link href={`/paintings/${i.painting_slug}`} target="_blank" className="underline-offset-2 hover:underline">{i.painting_title}</Link> : i.painting_title} · {formatPrice(i.price_usd)}
+                        </li>
+                      ))}
+                    </ul>
+                  )}
                 </div>
                 <StatusSelect label={`Status of order ${o.order_number}`} value={o.status} options={STATUS} onChange={updateOrderStatus.bind(null, o.id)} />
               </div>

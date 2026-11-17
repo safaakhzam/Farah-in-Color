@@ -32,7 +32,8 @@ A gallery-style web shop where Farah sells her original canvas paintings, with c
 | **Home** `/` | Hero with a featured painting, artist intro, featured collection, "how ordering works", Instagram feed and follow button |
 | **Shop** `/shop` | Gallery grid with filters (availability, size, price, color, collection, style) and sorting |
 | **Painting** `/paintings/[slug]` | Photo gallery with zoom, **View in a room** mockup drawn to scale, details, price, Sold/Reserved badge, **Order (Cash on Delivery)**, **Inquire about this piece**, WhatsApp button, related works |
-| **Order** `/order/[slug]` | Checkout: name, phone, email (optional), region, city, address, notes. No payment step. |
+| **Cart** `/cart` | Add several paintings, review them (sold ones are flagged) and check out in one cash-on-delivery order with one delivery fee |
+| **Order now** `/order/[slug]` | One-painting checkout: name, phone, email (optional), region, city, address, notes. No payment step. |
 | **Confirmation** | Tells the customer Farah will contact them and payment is cash on delivery, plus a WhatsApp button |
 | **About** `/about` | Story, process and photo |
 | **Commissions** `/commissions` | Custom request form: size, colors, budget (USD), idea, up to 5 reference images |
@@ -42,7 +43,7 @@ A gallery-style web shop where Farah sells her original canvas paintings, with c
 **Business rules built in**
 
 - USD only, English only, delivery in Lebanon only, cash on delivery.
-- **An original can never be sold twice.** Ordering runs a database function that locks the painting, checks it is still *Available*, creates the order and marks it *Reserved*, all in one step.
+- **An original can never be sold twice.** Ordering (one painting or a whole cart) runs a database function that locks every painting, checks they are all still *Available*, creates the order and marks them *Reserved*, all in one step. If one was taken meanwhile, nothing is ordered and the customer is told which one.
 - Order status keeps the painting in sync: **Delivered → Sold**, **Cancelled → Available again**.
 - Delivery fee (default **$5** flat) and an optional free-delivery threshold are editable in **Admin → Settings**.
 - Size filter bands come from each painting's dimensions: Small (< 40 cm longest side), Medium (40–80 cm), Large (> 80 cm). Paintings without dimensions show "Size to be announced".
@@ -75,7 +76,7 @@ Open http://localhost:3000. The dashboard is at http://localhost:3000/admin (ope
 Supabase stores the paintings, orders and photos, and handles the admin login. The free plan is enough.
 
 1. Create an account at [supabase.com](https://supabase.com) → **New project**. Choose a region close to Lebanon (e.g. *Frankfurt*). Save the database password somewhere safe.
-2. Go to **SQL Editor → New query**, paste the whole content of [`supabase/schema.sql`](./supabase/schema.sql) and click **Run**. This creates the tables, the "never sell twice" function, security rules and the two photo buckets.
+2. Go to **SQL Editor → New query**, paste the whole content of [`supabase/schema.sql`](./supabase/schema.sql) and click **Run**. (It is safe to run again after updates; re-run it whenever this file changes.) This creates the tables, the "never sell twice" function, security rules and the two photo buckets.
 3. *(Optional)* To start with the sample paintings, run [`supabase/seed.sql`](./supabase/seed.sql) the same way. Farah can delete them later from the dashboard.
 4. **Create Farah's login:** **Authentication → Users → Add user → Create new user**. Enter her email and a password, and tick **Auto Confirm User**.
 5. **Turn off public sign-ups** (important): **Authentication → Sign In / Providers → Email** (or *Authentication → Settings*) → disable **Allow new users to sign up**. Only accounts you create can log in.
@@ -171,12 +172,12 @@ The follow buttons in the header, footer, home page and About page work without 
 | Brand colors | `@theme` block at the top of [`src/app/globals.css`](./src/app/globals.css) |
 | Fonts | [`src/app/layout.tsx`](./src/app/layout.tsx) (Cormorant Garamond + DM Sans from Google Fonts) |
 | Artist photo | Replace `/public/images/artist-placeholder.jpg` (portrait, ~1000 × 1250 px) |
-| About story & process text | [`src/app/(site)/about/page.tsx`](./src/app/(site)/about/page.tsx) |
+| Farah's story (home + About) | [`src/content/artist.ts`](./src/content/artist.ts) |
 | Home intro text | [`src/app/(site)/page.tsx`](./src/app/(site)/page.tsx) |
 | Default share image | `/public/og-default.jpg` (1200 × 630) |
 | Size bands, default delivery fee, Instagram handle | [`src/lib/config.ts`](./src/lib/config.ts) |
 
-The bio and photo are placeholders: Instagram doesn't allow automated reading of the profile, so please paste Farah's real bio into the About page.
+The artist photo is still a placeholder.
 
 ---
 

@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { siteConfig } from "@/lib/config";
+import { CartButton } from "./cart/CartButton";
 import { InstagramIcon } from "./icons";
 import { Logo } from "./Logo";
 import { MobileNav } from "./MobileNav";
@@ -24,6 +25,7 @@ export function SiteHeader() {
           >
             <InstagramIcon className="h-4 w-4" /> Follow
           </a>
+          <CartButton className="-ml-2" />
         </nav>
         <div className="flex items-center gap-1 md:hidden">
           <a
@@ -35,6 +37,7 @@ export function SiteHeader() {
           >
             <InstagramIcon className="h-6 w-6" />
           </a>
+          <CartButton />
           <MobileNav />
         </div>
       </div>

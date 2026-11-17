@@ -49,8 +49,9 @@ function orderTable(o: Order) {
     `<tr><td style="padding:6px 0;color:#6B655E;width:40%">${k}</td><td style="padding:6px 0">${v}</td></tr>`;
   return `<table width="100%" cellpadding="0" cellspacing="0" style="font-size:14px;border-top:1px solid #eee;margin:16px 0">
     ${row("Order", esc(o.order_number))}
-    ${row("Painting", esc(o.painting_title))}
-    ${row("Price", formatPrice(o.subtotal_usd))}
+    ${(o.items?.length ? o.items : [{ painting_title: o.painting_title, price_usd: o.subtotal_usd }])
+      .map((i) => row(esc(i.painting_title), formatPrice(i.price_usd)))
+      .join("")}
     ${row("Delivery", o.delivery_fee_usd ? formatPrice(o.delivery_fee_usd) : "Free")}
     ${row("<b>Total (cash on delivery)</b>", `<b>${formatPrice(o.total_usd)}</b>`)}
     ${row("Deliver to", `${esc(o.address)}, ${esc(o.city)}, ${esc(o.area)}`)}
@@ -64,7 +65,7 @@ export async function sendOrderEmails(order: Order, notificationEmail: string) {
   );
 
   const artistBody = `
-    <p>You have a new order! The painting is now marked <b>Reserved</b>.</p>
+    <p>You have a new order! ${(o => (o.items?.length ?? 1) > 1 ? "The paintings are" : "The painting is")(order)} now marked <b>Reserved</b>.</p>
     ${orderTable(order)}
     <p><b>Customer:</b> ${esc(order.customer_name)}<br/>
        <b>Phone:</b> ${esc(order.phone)}<br/>
@@ -85,7 +86,7 @@ export async function sendOrderEmails(order: Order, notificationEmail: string) {
   if (order.email) {
     const customerBody = `
       <p>Dear ${esc(order.customer_name)},</p>
-      <p>Thank you for your order. <b>${esc(order.painting_title)}</b> is now reserved for you.</p>
+      <p>Thank you for your order. <b>${esc(order.painting_title)}</b> ${(order.items?.length ?? 1) > 1 ? "are" : "is"} now reserved for you.</p>
       ${orderTable(order)}
       <p>Farah will contact you on <b>${esc(order.phone)}</b> within 1–2 days to confirm the delivery date.
       Payment is <b>cash on delivery</b> in US dollars: nothing to pay now.</p>

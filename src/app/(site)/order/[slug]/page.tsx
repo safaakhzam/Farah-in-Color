@@ -61,7 +61,7 @@ export default async function OrderPage({ params }: { params: Promise<{ slug: st
           </div>
         </aside>
         <div className="lg:order-1 lg:col-span-7">
-          <OrderForm paintingId={painting.id} totalLabel={formatPrice(total)} />
+          <OrderForm paintingIds={[painting.id]} totalLabel={formatPrice(total)} />
         </div>
       </div>
     </div>

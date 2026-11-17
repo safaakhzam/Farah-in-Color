@@ -13,7 +13,11 @@ const lebanesePhone = z
   );
 
 export const orderSchema = z.object({
-  paintingId: z.string().min(1),
+  /** One or more painting ids, comma-separated (one painting = "Order now", several = cart). */
+  paintingIds: z
+    .string()
+    .transform((v) => [...new Set(v.split(",").map((x) => x.trim()).filter(Boolean))])
+    .pipe(z.array(z.string()).min(1, "Your cart is empty").max(10)),
   name: trimmed(100).min(2, "Please enter your full name"),
   phone: lebanesePhone,
   email: z.union([z.literal(""), z.email("Please enter a valid email")]).default(""),

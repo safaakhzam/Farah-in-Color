@@ -41,11 +41,17 @@ const demoMessages: ContactMessage[] = [
 
 export async function listOrders(status?: string): Promise<Order[]> {
   if (isDemoMode) return demoOrders.filter((o) => !status || o.status === status);
-  let q = createSupabaseAdminClient().from("orders").select("*").order("created_at", { ascending: false }).limit(300);
+  let q = createSupabaseAdminClient().from("orders").select("*, items:order_items(painting_id, painting_title, painting_slug, price_usd)").order("created_at", { ascending: false }).limit(300);
   if (status) q = q.eq("status", status);
   const { data, error } = await q;
   if (error) console.error(error.message);
-  return (data ?? []).map((o) => ({ ...o, subtotal_usd: Number(o.subtotal_usd), delivery_fee_usd: Number(o.delivery_fee_usd), total_usd: Number(o.total_usd) }));
+  return (data ?? []).map((o) => ({
+    ...o,
+    subtotal_usd: Number(o.subtotal_usd),
+    delivery_fee_usd: Number(o.delivery_fee_usd),
+    total_usd: Number(o.total_usd),
+    items: ((o.items ?? []) as Order["items"])!.map((i) => ({ ...i, price_usd: Number(i.price_usd) })),
+  }));
 }
 
 export async function listCommissions(): Promise<(Commission & { imageUrls: string[] })[]> {

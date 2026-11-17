@@ -138,6 +138,70 @@ end $$;
 -- Only the server (service role) may call place_order.
 revoke all on function public.place_order(uuid,text,text,text,text,text,text,text,numeric,text) from public, anon, authenticated;
 
+-- ── Order items (an order can contain several paintings) ─────────────
+create table if not exists public.order_items (
+  id             uuid primary key default gen_random_uuid(),
+  order_id       uuid not null references public.orders(id) on delete cascade,
+  painting_id    uuid references public.paintings(id) on delete set null,
+  painting_title text not null,
+  painting_slug  text,
+  price_usd      numeric(10,2) not null
+);
+create index if not exists order_items_order_idx on public.order_items(order_id);
+create index if not exists order_items_painting_idx on public.order_items(painting_id);
+
+-- ════════════════════════════════════════════════════════════════════
+-- place_cart_order: one order for one or more paintings (the cart).
+-- Locks every painting, checks they are ALL still available, creates the
+-- order + its items and reserves every painting, in one transaction.
+-- If any painting was taken meanwhile, nothing is saved.
+-- ════════════════════════════════════════════════════════════════════
+create or replace function public.place_cart_order(
+  p_painting_ids uuid[], p_customer_name text, p_phone text, p_email text,
+  p_city text, p_area text, p_address text, p_notes text,
+  p_delivery_fee numeric, p_payment_method text default 'cod'
+) returns public.orders
+language plpgsql security definer set search_path = public as $$
+declare
+  v_ids      uuid[];
+  v_count    int;
+  v_taken    text;
+  v_subtotal numeric;
+  v_titles   text;
+  v_order    public.orders;
+begin
+  select array_agg(distinct x) into v_ids from unnest(p_painting_ids) x;
+  if v_ids is null or array_length(v_ids, 1) = 0 then raise exception 'EMPTY_CART'; end if;
+
+  -- Lock in a stable order to avoid deadlocks between two simultaneous carts
+  perform 1 from public.paintings where id = any(v_ids) order by id for update;
+
+  select count(*) into v_count from public.paintings where id = any(v_ids);
+  if v_count <> array_length(v_ids, 1) then raise exception 'PAINTING_NOT_FOUND'; end if;
+
+  select string_agg(title, ', ') into v_taken from public.paintings where id = any(v_ids) and status <> 'available';
+  if v_taken is not null then raise exception 'PAINTING_NOT_AVAILABLE:%', v_taken; end if;
+
+  select sum(price_usd), string_agg(title, ', ' order by title) into v_subtotal, v_titles
+    from public.paintings where id = any(v_ids);
+
+  insert into public.orders (painting_id, painting_title, painting_slug, customer_name, phone, email,
+                             city, area, address, notes, subtotal_usd, delivery_fee_usd, total_usd, payment_method)
+  values (case when array_length(v_ids, 1) = 1 then v_ids[1] end, v_titles,
+          (select slug from public.paintings where id = v_ids[1] and array_length(v_ids, 1) = 1),
+          p_customer_name, p_phone, nullif(p_email, ''), p_city, p_area, p_address, nullif(p_notes, ''),
+          v_subtotal, p_delivery_fee, v_subtotal + p_delivery_fee, p_payment_method)
+  returning * into v_order;
+
+  insert into public.order_items (order_id, painting_id, painting_title, painting_slug, price_usd)
+    select v_order.id, id, title, slug, price_usd from public.paintings where id = any(v_ids);
+
+  update public.paintings set status = 'reserved' where id = any(v_ids);
+  return v_order;
+end $$;
+
+revoke all on function public.place_cart_order(uuid[],text,text,text,text,text,text,text,numeric,text) from public, anon, authenticated;
+
 -- ════════════════════════════════════════════════════════════════════
 -- Row Level Security
 -- Public visitors can only READ paintings. Everything else (orders,
@@ -149,6 +213,7 @@ alter table public.orders      enable row level security;
 alter table public.commissions enable row level security;
 alter table public.messages    enable row level security;
 alter table public.settings    enable row level security;
+alter table public.order_items enable row level security;
 
 drop policy if exists "Paintings are public" on public.paintings;
 create policy "Paintings are public" on public.paintings for select using (true);

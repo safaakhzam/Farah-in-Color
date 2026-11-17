@@ -4,6 +4,7 @@ import { ArrowRight, Banknote, Paintbrush, Truck } from "lucide-react";
 import { InstagramFeed } from "@/components/InstagramFeed";
 import { PaintingCard } from "@/components/PaintingCard";
 import { StatusBadge } from "@/components/StatusBadge";
+import { artistGreeting, artistStory } from "@/content/artist";
 import { getFeaturedPaintings, getPaintings } from "@/lib/data/paintings";
 import { formatPrice } from "@/lib/format";
 
@@ -21,10 +22,10 @@ export default async function HomePage() {
         <div className="animate-fade-up md:col-span-5">
           <p className="eyebrow">Original paintings on canvas</p>
           <h1 className="mt-4 text-5xl leading-[1.02] sm:text-6xl lg:text-7xl">
-            Art that fills a room with <span className="text-color-gradient italic">color</span>
+            Where Emotions find their <span className="text-color-gradient italic">Color</span>
           </h1>
           <p className="mt-6 max-w-md text-lg leading-relaxed text-muted">
-            One-of-a-kind paintings by Farah, painted by hand and delivered to your door anywhere in Lebanon.
+            Original, one-of-a-kind paintings, each born from a feeling, an idea or a moment that will never happen quite the same way again
           </p>
           <div className="mt-8 flex flex-wrap gap-3">
             <Link href="/shop" className="btn-primary">
@@ -75,14 +76,12 @@ export default async function HomePage() {
           </div>
           <div>
             <p className="eyebrow">Meet the artist</p>
-            <h2 className="mt-3 text-4xl sm:text-5xl">Hello, I&apos;m Farah</h2>
-            <p className="mt-6 text-lg leading-relaxed text-muted">
-              I&apos;m an art designer who paints on canvas. My work is about light, warmth and the colors of everyday
-              life in Lebanon: the sea at golden hour, flowers on a balcony, a feeling I want to hold on to.
-            </p>
-            <p className="mt-4 leading-relaxed text-muted">
-              Every painting is an original, signed and made by hand. Once it finds its home, it&apos;s gone for good.
-            </p>
+            <h2 className="mt-3 text-4xl sm:text-5xl">{artistGreeting}</h2>
+            <div className="mt-6 space-y-4 leading-relaxed text-muted">
+              {artistStory.map((p, i) => (
+                <p key={i} className={i === 0 ? "text-lg" : ""}>{p}</p>
+              ))}
+            </div>
             <Link href="/about" className="mt-8 inline-flex items-center gap-2 border-b border-ink pb-1 text-sm font-medium hover:border-coral hover:text-coral-deep">
               Read my story <ArrowRight className="h-4 w-4" />
             </Link>

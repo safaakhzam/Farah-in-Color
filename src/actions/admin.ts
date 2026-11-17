@@ -176,24 +176,33 @@ export async function updateOrderStatus(orderId: string, status: OrderStatus) {
     .from("orders")
     .update({ status, ...(status === "delivered" ? { payment_status: "paid" } : {}) })
     .eq("id", orderId)
-    .select("painting_id")
+    .select("painting_id, order_items(painting_id)")
     .single();
   if (error) return { error: error.message };
 
-  if (order?.painting_id) {
-    const paintingStatus: PaintingStatus =
-      status === "delivered" ? "sold" : status === "cancelled" ? "available" : "reserved";
+  // Every painting in the order (cart orders have several)
+  const ids = new Set<string>(
+    ((order?.order_items ?? []) as { painting_id: string | null }[])
+      .map((i) => i.painting_id)
+      .filter((x): x is string => Boolean(x)),
+  );
+  if (order?.painting_id) ids.add(order.painting_id);
 
+  const paintingStatus: PaintingStatus =
+    status === "delivered" ? "sold" : status === "cancelled" ? "available" : "reserved";
+
+  for (const pid of ids) {
     if (paintingStatus === "available") {
       // Only free the painting if no other active order holds it.
       const { count } = await supabase
-        .from("orders")
-        .select("id", { count: "exact", head: true })
-        .eq("painting_id", order.painting_id)
-        .in("status", ["new", "confirmed", "delivered"]);
-      if (!count) await supabase.from("paintings").update({ status: "available" }).eq("id", order.painting_id);
+        .from("order_items")
+        .select("order_id, orders!inner(status)", { count: "exact", head: true })
+        .eq("painting_id", pid)
+        .neq("order_id", orderId)
+        .in("orders.status", ["new", "confirmed", "delivered"]);
+      if (!count) await supabase.from("paintings").update({ status: "available" }).eq("id", pid);
     } else {
-      await supabase.from("paintings").update({ status: paintingStatus }).eq("id", order.painting_id);
+      await supabase.from("paintings").update({ status: paintingStatus }).eq("id", pid);
     }
   }
   refreshSite();

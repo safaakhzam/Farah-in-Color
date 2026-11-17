@@ -1,3 +1,4 @@
+import { CartProvider } from "@/components/cart/CartProvider";
 import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
 import { WhatsAppFloat } from "@/components/WhatsAppFloat";
@@ -7,7 +8,7 @@ import { isDemoMode } from "@/lib/supabase/env";
 export default async function SiteLayout({ children }: { children: React.ReactNode }) {
   const settings = await getSettings();
   return (
-    <>
+    <CartProvider>
       <a href="#main" className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[60] focus:rounded focus:bg-ink focus:px-4 focus:py-2 focus:text-white">
         Skip to content
       </a>
@@ -20,6 +21,6 @@ export default async function SiteLayout({ children }: { children: React.ReactNo
       <main id="main">{children}</main>
       <SiteFooter whatsappNumber={settings.whatsapp_number} />
       <WhatsAppFloat number={settings.whatsapp_number} />
-    </>
+    </CartProvider>
   );
 }
