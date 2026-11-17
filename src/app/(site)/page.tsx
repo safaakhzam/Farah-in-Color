@@ -65,10 +65,10 @@ export default async function HomePage() {
         <div className="container-page grid items-center gap-10 py-20 md:grid-cols-2 md:gap-16">
           <div className="relative mx-auto w-full max-w-sm md:max-w-none">
             <Image
-              src="/images/artist-placeholder.jpg"
-              alt="Farah, the artist behind Farah in Color, in her studio"
-              width={1000}
-              height={1250}
+              src="/images/farah.jpg"
+              alt="Farah laughing with a handful of paintbrushes in front of blank canvases"
+              width={1200}
+              height={1600}
               sizes="(min-width: 768px) 40vw, 90vw"
               className="h-auto w-full md:max-w-md"
             />

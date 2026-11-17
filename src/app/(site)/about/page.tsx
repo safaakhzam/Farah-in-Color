@@ -12,7 +12,7 @@ export const metadata: Metadata = {
 };
 
 /* Farah's story lives in src/content/artist.ts (shared with the home page).
- * Replace /public/images/artist-placeholder.jpg with her photo (portrait, ~1000 × 1250 px). */
+ * Her photo is /public/images/farah.jpg (portrait 3:4, 1200 × 1600 px): replace the file to change it. */
 
 export default function AboutPage() {
   return (
@@ -20,10 +20,10 @@ export default function AboutPage() {
       <section className="container-page grid items-center gap-12 pt-10 md:grid-cols-2 md:pt-16">
         <div className="relative">
           <Image
-            src="/images/artist-placeholder.jpg"
-            alt="Portrait of Farah, the artist behind Farah in Color"
-            width={1000}
-            height={1250}
+            src="/images/farah.jpg"
+            alt="Farah, the artist behind Farah in Color, holding her paintbrushes in her studio"
+            width={1200}
+            height={1600}
             priority
             sizes="(min-width: 768px) 45vw, 100vw"
             className="h-auto w-full"

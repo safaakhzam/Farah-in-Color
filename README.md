@@ -171,7 +171,7 @@ The follow buttons in the header, footer, home page and About page work without 
 | **Logo** | Put the file in `/public` (e.g. `/public/logo.svg`) and set `logo: "/logo.svg"` in [`src/lib/config.ts`](./src/lib/config.ts). The text wordmark is replaced everywhere. Replace `/public/icon.svg` for the browser tab icon. |
 | Brand colors | `@theme` block at the top of [`src/app/globals.css`](./src/app/globals.css) |
 | Fonts | [`src/app/layout.tsx`](./src/app/layout.tsx) (Cormorant Garamond + DM Sans from Google Fonts) |
-| Artist photo | Replace `/public/images/artist-placeholder.jpg` (portrait, ~1000 × 1250 px) |
+| Artist photo | Replace `/public/images/farah.jpg` (portrait 3:4, ~1200 × 1600 px) |
 | Farah's story (home + About) | [`src/content/artist.ts`](./src/content/artist.ts) |
 | Home intro text | [`src/app/(site)/page.tsx`](./src/app/(site)/page.tsx) |
 | Default share image | `/public/og-default.jpg` (1200 × 630) |
